@@ -1,3 +1,5 @@
+library(dplyr)
+library(ggparliament)
 library(ggplot2)
 
 combined=read.csv("combined.csv")
@@ -13,4 +15,14 @@ combined[grep("Con", combined$resultOfElection),"conservative"]=T
 combined[grep("Lab", combined$resultOfElection),"labour"]=T
 combined$party=gsub("^(\\S+).*","\\1", combined$resultOfElection)
 summary(combined[combined$labour==T,"sig_over_turnout"])
-ggplot(combined,aes(x=euref,y=sig_over_turnout,colour=party))+geom_point()+ggtitle("Signatures/last GE turnout by EU referendum result")
+uk_data <- election_data %>%
+  filter(country == "UK") %>%
+  filter(year == 2017) %>% #parliament_data() can be called in a dplyr chain.
+  parliament_data(election_data = ., 
+                  party_seats = .$seats,
+                  #need to include grouping for opposing benches by definition
+                  group = .$government,
+                  parl_rows = 12,
+                  type = "opposing_benches")
+combined=merge(combined,unique(uk_data[,c("party_short","colour")]),by.x = "party",by.y="party_short")
+ggplot(combined,aes(x=euref,y=sig_over_turnout,colour=party))+geom_point()+ggtitle("Signatures/last GE turnout by EU referendum result")+xlab("%leave in 2016 EU referendum")+ylab("Signatures/last general election turnout")+scale_colour_manual(values = combined$colour, limits = combined$party)
