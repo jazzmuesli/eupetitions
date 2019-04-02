@@ -63,7 +63,7 @@ divisions['iv1_k']=1105529
 # revocation to avoid no deal
 divisions['iv1_l']=1105530
 # people's vote
-divisions['iv1_l']=1105532
+divisions['iv1_m']=1105532
 # preferential arrangements
 divisions['iv1_o']=1105533
 divisions['mv3']=1107737
