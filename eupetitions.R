@@ -26,3 +26,15 @@ p1=ggplot(combined,aes(x=euref,y=revoke_sign_count/electorate,colour=party))+geo
 p2=ggplot(combined,aes(x=euref,y=nodeal_sign_count/electorate,colour=party))+geom_point()+ggtitle("Signatures for no-deal Brexit/electorate by EU referendum result")+xlab("%leave in 2016 EU referendum")+ylab("Signatures/electorate")+scale_colour_manual(values = combined$colour, limits = combined$party)
 ggsave(filename = "charts.png", grid.arrange(p1,p2,ncol=2),dpi = 320, width = 297,height = 210,units="mm")
 write.csv(combined,"combined.csv",row.names = F)
+
+data=read.csv("vcombined.csv")
+data$party=gsub("^(\\S+).*","\\1", data$resultOfElection)
+library(nnet)
+model=nnet::nnet(mv3~mv1+mv2+party+euref+majority+electorate+turnout+revoke_sign_count+nodeal_sign_count+iv2_c+iv2_d+iv2_e+iv2_g, data,size=30)
+# simpler network provides more realistic results
+model=nnet::nnet(mv3~mv2+mv1+euref+party+iv2_d+iv2_c+iv2_e, data,size=10)
+data$pred_mv3=predict(model, data,type = "class")
+data$pred_mv3_yes=predict(model, data,type = "raw")[,2]
+data$pred_mv3_no=predict(model, data,type = "raw")[,3]
+# defeated by 22 votes
+table(data$pred_mv3_yes>0.5)[2]-table(data$pred_mv3_no>0.5)[2]
