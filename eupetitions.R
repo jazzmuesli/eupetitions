@@ -38,3 +38,8 @@ data$pred_mv3_yes=predict(model, data,type = "raw")[,2]
 data$pred_mv3_no=predict(model, data,type = "raw")[,3]
 # defeated by 22 votes
 table(data$pred_mv3_yes>0.5)[2]-table(data$pred_mv3_no>0.5)[2]
+vote_f=function(x) {ifelse(x=="AyeVote",1,ifelse(x=="NoVote",-1,0))}
+cor(sapply(data[,grep("^[im]v[123]", names(data),value=T)], vote_f))
+x=sapply(data[,grep("^[im]v[123]", names(data),value=T)], vote_f)
+m=cbind(x,data[,c("euref","nodeal_sign_count","revoke_sign_count")])
+corrplot::corrplot(cor(m))
