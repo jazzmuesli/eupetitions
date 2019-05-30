@@ -39,6 +39,11 @@ signatures_df=pro_eu_signatures_df.merge(nodeal_signatures_df, left_on=['mp','co
 
 combined=euref_df.merge(signatures_df, left_on='ons_code',right_on='ons_code')
 combined=combined.merge(electorate_df, left_on='constituency',right_on='constituency')
+
+ep2019=pd.ExcelFile('Estimates of the EP2019 vote in Westminster constituencies.xlsx').parse('export')
+ep2019=ep2019[[x for x in ep2019.columns if not '_pct' in x and 'Winner17' not in x]]
+ep2019.columns=['ep2019_'+x for x in ep2019.columns]
+combined=combined.merge(ep2019, left_on='ons_code', right_on='ep2019_PCON11CD',how='left')
 combined.to_csv('combined.csv')
 
 divisions=dict()

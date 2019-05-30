@@ -25,6 +25,7 @@ combined=merge(combined,party_colours,by.x = "party",by.y="party_short")
 p1=ggplot(combined,aes(x=euref,y=revoke_sign_count/electorate,colour=party))+geom_point()+ggtitle("Signatures to revoke A50/electorate by EU referendum result")+xlab("%leave in 2016 EU referendum")+ylab("Signatures/electorate")+scale_colour_manual(values = combined$colour, limits = combined$party)+theme(legend.position = "none") 
 p2=ggplot(combined,aes(x=euref,y=nodeal_sign_count/electorate,colour=party))+geom_point()+ggtitle("Signatures for no-deal Brexit/electorate by EU referendum result")+xlab("%leave in 2016 EU referendum")+ylab("Signatures/electorate")+scale_colour_manual(values = combined$colour, limits = combined$party)
 ggsave(filename = "charts.png", grid.arrange(p1,p2,ncol=2),dpi = 320, width = 297,height = 210,units="mm")
+combined$party=gsub("^(\\S+).*","\\1", combined$resultOfElection)
 write.csv(combined,"combined.csv",row.names = F)
 
 data=read.csv("vcombined.csv")
